@@ -85,21 +85,33 @@ const Dashboard = () => {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
                     {[
-                        { label: 'Active Courses', value: activeCourses, icon: BookOpen, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                        { label: 'Hours Watched', value: `${hoursWatched}h`, icon: Clock, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-                        { label: 'Certificates', value: certificates, icon: Award, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-                        { label: 'My Rank', value: myRank ? `#${myRank}` : '-', icon: Trophy, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-                    ].map((stat, i) => (
-                        <div key={i} className="bg-[#1e293b] border border-slate-700/50 p-8 rounded-3xl flex items-center gap-6 group hover:border-slate-600 transition-all shadow-sm">
-                            <div className={`${stat.bg} ${stat.color} w-16 h-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110`}>
-                                <stat.icon size={32} />
+                        { label: 'Active Courses', value: activeCourses, icon: BookOpen, color: 'text-blue-500', bg: 'bg-blue-500/10', link: '/my-courses' },
+                        { label: 'Hours Watched', value: `${hoursWatched}h`, icon: Clock, color: 'text-emerald-500', bg: 'bg-emerald-500/10', link: null },
+                        { label: 'Certificates', value: certificates, icon: Award, color: 'text-amber-500', bg: 'bg-amber-500/10', link: '/certificates' },
+                        { label: 'My Rank', value: myRank ? `#${myRank}` : '-', icon: Trophy, color: 'text-purple-500', bg: 'bg-purple-500/10', link: '/leaderboard' },
+                    ].map((stat, i) => {
+                        const CardContent = (
+                            <div className="bg-[#1e293b] border border-slate-700/50 p-8 rounded-3xl flex items-center gap-6 group hover:border-slate-600 transition-all shadow-sm">
+                                <div className={`${stat.bg} ${stat.color} w-16 h-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110`}>
+                                    <stat.icon size={32} />
+                                </div>
+                                <div>
+                                    <h3 className="text-4xl font-bold text-white mb-0.5">{stat.value}</h3>
+                                    <p className="text-slate-400 font-medium">{stat.label}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-bold text-white mb-0.5">{stat.value}</h3>
-                                <p className="text-slate-400 font-medium">{stat.label}</p>
+                        );
+
+                        return stat.link ? (
+                            <Link key={i} to={stat.link} className="block">
+                                {CardContent}
+                            </Link>
+                        ) : (
+                            <div key={i}>
+                                {CardContent}
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* My Learning Section */}

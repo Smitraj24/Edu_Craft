@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import CourseDetail from './pages/CourseDetail';
 import Courses from './pages/Courses';
 import Certificate from './pages/Certificate';
+import Certificates from './pages/Certificates';
 import Profile from './pages/Profile';
 import MyCourses from './pages/MyCourses';
 import Quiz from './pages/Quiz';
@@ -79,6 +80,7 @@ const router = createBrowserRouter([
             { path: 'my-courses', element: <ProtectedRoute roles={['student']}><MyCourses /></ProtectedRoute> },
             { path: 'wishlist', element: <ProtectedRoute roles={['student', 'admin', 'instructor']}><Wishlist /></ProtectedRoute> },
             { path: 'leaderboard', element: <ProtectedRoute roles={['student', 'admin', 'instructor']}><Leaderboard /></ProtectedRoute> },
+            { path: 'certificates', element: <ProtectedRoute roles={['student']}><Certificates /></ProtectedRoute> },
             { path: 'quiz/:courseId', element: <ProtectedRoute roles={['student']}><Quiz /></ProtectedRoute> },
             { path: 'certificate/:id', element: <ProtectedRoute roles={['student']}><Certificate /></ProtectedRoute> },
 
