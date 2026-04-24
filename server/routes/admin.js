@@ -6,6 +6,43 @@ const { protect, admin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+// @route   POST /api/admin/courses
+// @desc    Create a course as admin (on behalf of instructor)
+// @access  Private/Admin
+router.post('/courses', protect, admin, async (req, res) => {
+    const { title, description, price, category, videos, thumbnail, previewVideo, instructorId, status } = req.body;
+
+    try {
+        if (!instructorId) {
+            return res.status(400).json({ message: 'Instructor ID is required' });
+        }
+
+        const instructor = await User.findById(instructorId);
+        if (!instructor || instructor.role !== 'instructor') {
+            return res.status(400).json({ message: 'Invalid instructor' });
+        }
+
+        const course = new Course({
+            title,
+            description,
+            price,
+            category,
+            videos: videos || [],
+            thumbnail,
+            previewVideo,
+            instructor: instructorId,
+            status: status || 'approved', // Admin can auto-approve
+            quizzes: [],
+            assignments: []
+        });
+
+        const createdCourse = await course.save();
+        res.status(201).json(createdCourse);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @route   GET /api/admin/dashboard
 // @desc    Get system-wide statistics
 // @access  Private/Admin

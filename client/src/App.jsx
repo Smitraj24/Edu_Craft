@@ -34,6 +34,7 @@ import UserManagement from './pages/UserManagement';
 import CourseApproval from './pages/CourseApproval';
 import CategoryManagement from './pages/CategoryManagement';
 import Reports from './pages/Reports';
+import AdminCreateCourse from './pages/AdminCreateCourse';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, roles }) => {
@@ -96,6 +97,7 @@ const router = createBrowserRouter([
             { path: 'admin/dashboard', element: <ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute> },
             { path: 'admin/users', element: <ProtectedRoute roles={['admin']}><UserManagement /></ProtectedRoute> },
             { path: 'admin/courses', element: <ProtectedRoute roles={['admin']}><CourseApproval /></ProtectedRoute> },
+            { path: 'admin/courses/create', element: <ProtectedRoute roles={['admin']}><AdminCreateCourse /></ProtectedRoute> },
             { path: 'admin/categories', element: <ProtectedRoute roles={['admin']}><CategoryManagement /></ProtectedRoute> },
             { path: 'admin/reports', element: <ProtectedRoute roles={['admin']}><Reports /></ProtectedRoute> },
         ]

@@ -43,7 +43,7 @@ app.use('/api/payments', require('./routes/payments'));
 app.use('/api/razorpay', require('./routes/razorpay'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/chatbot', require('./routes/chatbot'));
-app.use('/api', require('./routes/uploadRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)

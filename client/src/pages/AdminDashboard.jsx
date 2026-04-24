@@ -104,6 +104,12 @@ const AdminDashboard = () => {
                     </div>
                     
                     <div className="flex gap-4">
+                        <button 
+                            onClick={() => navigate('/admin/courses/create')}
+                            className="bg-primary text-white h-16 px-8 rounded-2xl font-bold text-sm shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all flex items-center gap-3"
+                        >
+                            <BookOpen size={20} /> Create Course
+                        </button>
                         <button className="bg-[#1e293b] border border-slate-700 text-white h-16 px-8 rounded-2xl font-bold text-sm shadow-xl hover:bg-slate-700 transition-all flex items-center gap-3">
                             <Database size={20} className="text-primary" /> Backup Database
                         </button>
