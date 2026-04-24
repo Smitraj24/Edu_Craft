@@ -1,9 +1,59 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 
 const router = express.Router();
+
+// Configure Google OAuth Strategy (only if credentials are provided)
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL
+    }, async (accessToken, refreshToken, profile, done) => {
+        try {
+            // Check if user already exists
+            let user = await User.findOne({ googleId: profile.id });
+
+            if (user) {
+                return done(null, user);
+            }
+
+            // Check if email already exists with local auth
+            user = await User.findOne({ email: profile.emails[0].value });
+
+            if (user) {
+                // Link Google account to existing user
+                user.googleId = profile.id;
+                user.authProvider = 'google';
+                user.isEmailVerified = true;
+                user.profilePicture = profile.photos[0]?.value || '';
+                await user.save();
+                return done(null, user);
+            }
+
+            // Create new user
+            user = await User.create({
+                googleId: profile.id,
+                name: profile.displayName,
+                email: profile.emails[0].value,
+                authProvider: 'google',
+                isEmailVerified: true,
+                profilePicture: profile.photos[0]?.value || '',
+                role: 'student' // Default role for Google signup
+            });
+
+            done(null, user);
+        } catch (error) {
+            done(error, null);
+        }
+    }));
+} else {
+    console.warn('⚠️  Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env to enable.');
+}
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET || 'supersecretjwtkey_change_in_production', {
@@ -235,6 +285,42 @@ router.post('/reset-password', async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Error updating password' });
     }
+});
+
+// @route   GET /api/auth/google
+// @desc    Initiate Google OAuth
+router.get('/google', (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+        return res.status(503).json({ message: 'Google OAuth is not configured on this server' });
+    }
+    passport.authenticate('google', { 
+        scope: ['profile', 'email'],
+        session: false 
+    })(req, res, next);
+});
+
+// @route   GET /api/auth/google/callback
+// @desc    Google OAuth callback
+router.get('/google/callback', (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=google_auth_not_configured`);
+    }
+    passport.authenticate('google', { 
+        session: false,
+        failureRedirect: `${process.env.CLIENT_URL}/login?error=google_auth_failed`
+    })(req, res, next);
+}, (req, res) => {
+    // Generate JWT token
+    const token = generateToken(req.user._id);
+    
+    // Redirect to frontend with token
+    res.redirect(`${process.env.CLIENT_URL}/auth/google/success?token=${token}&user=${encodeURIComponent(JSON.stringify({
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+        profilePicture: req.user.profilePicture
+    }))}`);
 });
 
 module.exports = router;

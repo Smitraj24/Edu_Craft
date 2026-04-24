@@ -1,7 +1,34 @@
 import { Link } from 'react-router-dom';
-import { PlayCircle, Clock, Star, Users, GraduationCap, ChevronRight, BookOpen, Play } from 'lucide-react';
+import { Users, Play, Heart } from 'lucide-react';
+import { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { WishlistContext } from '../context/WishlistContext';
+import toast from 'react-hot-toast';
 
 const CourseCard = ({ course }) => {
+    const { user } = useContext(AuthContext);
+    const { isInWishlist, toggleWishlist } = useContext(WishlistContext);
+    const [loading, setLoading] = useState(false);
+
+    const handleWishlistToggle = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            toast.error('Please login to add to wishlist');
+            return;
+        }
+
+        setLoading(true);
+        const result = await toggleWishlist(course._id);
+        setLoading(false);
+
+        if (result.success) {
+            toast.success(result.message);
+        } else {
+            toast.error(result.message);
+        }
+    };
     // Determine thumbnail (handle both physical uploads and placeholders)
     const thumbnailPath = course.thumbnail 
         ? (course.thumbnail.startsWith('http') ? course.thumbnail : `http://localhost:5000${course.thumbnail}`)
@@ -30,6 +57,20 @@ const CourseCard = ({ course }) => {
                         {course.category || 'Tech'}
                     </span>
                 </div>
+
+                {/* Wishlist Button */}
+                {user && (
+                    <button 
+                        onClick={handleWishlistToggle}
+                        disabled={loading}
+                        className="absolute top-3 right-3 w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-black/60 transition-all border border-white/10 group/heart z-10"
+                    >
+                        <Heart 
+                            size={20} 
+                            className={`transition-all ${isInWishlist(course._id) ? 'fill-red-500 text-red-500' : 'text-white group-hover/heart:text-red-500'}`}
+                        />
+                    </button>
+                )}
 
                 {/* Hover Play Button Overlay */}
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

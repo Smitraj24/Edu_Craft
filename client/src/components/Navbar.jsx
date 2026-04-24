@@ -1,19 +1,23 @@
 import { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { WishlistContext } from '../context/WishlistContext';
 import { 
   Menu, X, LogOut, User, Layout, 
   BookOpen, GraduationCap, 
-  ChevronDown, Bell, Search, Box
+  ChevronDown, Bell, Search, Box, Heart
 } from 'lucide-react';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
+    const { wishlist } = useContext(WishlistContext);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+
+    const wishlistCount = wishlist.length;
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -73,6 +77,14 @@ const Navbar = () => {
 
                     {user ? (
                         <div className="flex items-center gap-6">
+                            <Link to="/wishlist" className="relative p-2 text-slate-400 hover:text-white transition-all">
+                                <Heart size={22} />
+                                {wishlistCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                        {wishlistCount}
+                                    </span>
+                                )}
+                            </Link>
                             <div className="relative">
                                 <button 
                                     className="flex items-center gap-3 p-1.5 bg-slate-800 border border-slate-700 rounded-xl hover:border-slate-600 transition-all group"
@@ -137,6 +149,12 @@ const Navbar = () => {
                                 {link.name}
                             </Link>
                         ))}
+                        {user && (
+                            <Link to="/wishlist" className="flex items-center gap-4 p-5 bg-[#1e293b] border border-slate-700 rounded-2xl text-lg font-bold text-white">
+                                <Heart size={24} className="text-primary" />
+                                Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+                            </Link>
+                        )}
                     </div>
 
                     <div className="mt-auto pb-10 space-y-4">

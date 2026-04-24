@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema({
         enum: ['student', 'instructor', 'admin'],
         default: 'student',
     },
+    wishlist: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    }],
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     resetPasswordOTP: String,

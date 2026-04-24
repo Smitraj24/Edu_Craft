@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { AuthContext } from './context/AuthContext';
 import MainLayout from './components/MainLayout';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
 import Home from './pages/Home';
@@ -15,6 +16,8 @@ import Profile from './pages/Profile';
 import MyCourses from './pages/MyCourses';
 import Quiz from './pages/Quiz';
 import ForgotPassword from './pages/ForgotPassword';
+import Wishlist from './pages/Wishlist';
+import Leaderboard from './pages/Leaderboard';
 
 import InstructorDashboard from './pages/InstructorDashboard';
 import CreateCourse from './pages/CreateCourse';
@@ -23,6 +26,7 @@ import AddLesson from './pages/AddLesson';
 import QuizBuilder from './pages/QuizBuilder';
 import MyStudents from './pages/MyStudents';
 import AddAssignment from './pages/AddAssignment';
+import GoogleAuthSuccess from './pages/GoogleAuthSuccess';
 
 import AdminDashboard from './pages/AdminDashboard';
 import UserManagement from './pages/UserManagement';
@@ -59,18 +63,22 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <RootLayout />,
+        errorElement: <ErrorBoundary />,
         children: [
             // Public Routes
             { index: true, element: <Home /> },
             { path: 'courses', element: <Courses /> },
             { path: 'login', element: <Login /> },
             { path: 'forgot-password', element: <ForgotPassword /> },
+            { path: 'auth/google/success', element: <GoogleAuthSuccess /> },
             { path: 'course/:id', element: <CourseDetail /> },
 
             // Student / Shared (Protected)
             { path: 'dashboard', element: <ProtectedRoute roles={['student', 'admin', 'instructor']}><Dashboard /></ProtectedRoute> },
             { path: 'profile', element: <ProtectedRoute roles={['student', 'admin', 'instructor']}><Profile /></ProtectedRoute> },
             { path: 'my-courses', element: <ProtectedRoute roles={['student']}><MyCourses /></ProtectedRoute> },
+            { path: 'wishlist', element: <ProtectedRoute roles={['student', 'admin', 'instructor']}><Wishlist /></ProtectedRoute> },
+            { path: 'leaderboard', element: <ProtectedRoute roles={['student', 'admin', 'instructor']}><Leaderboard /></ProtectedRoute> },
             { path: 'quiz/:courseId', element: <ProtectedRoute roles={['student']}><Quiz /></ProtectedRoute> },
             { path: 'certificate/:id', element: <ProtectedRoute roles={['student']}><Certificate /></ProtectedRoute> },
 
